@@ -24,20 +24,26 @@
          console.log(pair[0]+ ', '+ pair[1]); 
       }
        toSend = formData;
-       contentType = "multipart/form-data";
     }else{
       toSend = JSON.stringify(JSON.parse(request_body));
     }
     console.log(file_value);
-    const res =  await fetch(base_url + model_value + "/" + file_value, {
+    let res;
+    if(toSend instanceof FormData){
+      res =  await fetch(base_url + model_value + "/" + file_value, {
+      method: 'POST',
+      body: toSend 
+    })
+    }else{
+      res =  await fetch(base_url + model_value + "/" + file_value, {
       method: 'POST',
       headers: {
         "Content-Type": contentType,
-        "Accept": "*/*",
-        "Accept-Encoding": "gzip, deflate, br"
       },
       body: toSend 
     })
+    }
+   
     response_body = JSON.stringify(await res.json());
   }
 
