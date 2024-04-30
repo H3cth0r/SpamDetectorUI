@@ -2,13 +2,12 @@
   import { FileDropzone } from '@skeletonlabs/skeleton';
   import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 
-  let value: string = "json";
+  let file_value: string = "json";
   let base_url: string = "localhost:8080/";
   let model_value: string = "roberta";
 
   let files: FileList;
   function addedFile(e: Event): void{
-    console.log(e.detail.files);
     console.log(files);
   }
 
@@ -16,17 +15,30 @@
   let response_body: string;
   
   async function post_json () {
-    console.log("sending request");
-    let body_data: string = JSON.stringify(JSON.parse(request_body));
-    console.log(body_data);
-    const res =  await fetch(base_url + model_value + "/" + value, {
+    let toSend;
+    let contentType: string = "application/json";
+    if(file_value === "csv"){
+       let formData = new FormData();
+       formData.append("file", files[0]);
+      for(var pair of formData.entries()) {
+         console.log(pair[0]+ ', '+ pair[1]); 
+      }
+       toSend = formData;
+       contentType = "multipart/form-data";
+    }else{
+      toSend = JSON.stringify(JSON.parse(request_body));
+    }
+    console.log(file_value);
+    const res =  await fetch(base_url + model_value + "/" + file_value, {
       method: 'POST',
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": contentType,
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br"
       },
-      body: body_data
+      body: toSend 
     })
-   response_body = JSON.stringify(await res.json());
+    response_body = JSON.stringify(await res.json());
   }
 
   let open_warning: boolean = false;
@@ -86,16 +98,16 @@
         >
             <span>Body Type</span>
             <RadioGroup >
-              <RadioItem bind:group={value} name="justify" value={"json"}>Json</RadioItem>
-              <RadioItem bind:group={value} name="justify" value={"csv"}>File</RadioItem>
+              <RadioItem bind:group={file_value} name="justify" value={"json"}>Json</RadioItem>
+              <RadioItem bind:group={file_value} name="justify" value={"csv"}>File</RadioItem>
             </RadioGroup>
         </div>
 
         <div
           class="h-1/4 flex flex-col justify-center"
         >
-          {#if value == 1}
-              <FileDropzone name="files" bind:files on:change={addedFile} on:drop={addedFile} accept="text/csv">
+          {#if file_value == "csv"}
+              <FileDropzone name="files" bind:files on:change={addedFile} accept="text/csv">
               </FileDropzone>
           {:else}
             <textarea class="textarea" bind:value={request_body} rows="4" placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit." />
