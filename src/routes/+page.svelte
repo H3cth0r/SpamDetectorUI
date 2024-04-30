@@ -2,7 +2,7 @@
   import { FileDropzone } from '@skeletonlabs/skeleton';
   import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 
-  let value: number = 0;
+  let value: string = "json";
   let base_url: string = "localhost:8080/";
   let model_value: string = "roberta";
 
@@ -13,14 +13,20 @@
   }
 
   let request_body: string;
-
+  let response_body: string;
   
   async function post_json () {
     console.log("sending request");
-    const res =  await fetch(base_url + model_value + "/json", {
+    let body_data: string = JSON.stringify(JSON.parse(request_body));
+    console.log(body_data);
+    const res =  await fetch(base_url + model_value + "/" + value, {
       method: 'POST',
-      body: JSON.stringify(request_body)
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: body_data
     })
+   response_body = JSON.stringify(await res.json());
   }
 
   let open_warning: boolean = false;
@@ -67,11 +73,11 @@
 
         <label class="label">
           <span>Model</span>
-          <select class="select">
+          <select class="select" bind:value={model_value}>
             <option value="roberta">Roberta</option>
-            <option value="tinybert">Tiny Bert</option>
-            <option value="xgbw2v">XGB W2V</option>
-            <option value="xgbemb">xgbemb</option>
+            <option value="tiny-bert">Tiny Bert</option>
+            <option value="xgb/w2v">XGB W2V</option>
+            <option value="xgb/roberta">XGB Roberta</option>
           </select>
         </label>
 
@@ -80,8 +86,8 @@
         >
             <span>Body Type</span>
             <RadioGroup >
-              <RadioItem bind:group={value} name="justify" value={0}>Json</RadioItem>
-              <RadioItem bind:group={value} name="justify" value={1}>File</RadioItem>
+              <RadioItem bind:group={value} name="justify" value={"json"}>Json</RadioItem>
+              <RadioItem bind:group={value} name="justify" value={"csv"}>File</RadioItem>
             </RadioGroup>
         </div>
 
@@ -100,7 +106,7 @@
           class="h-1/4 flex flex-col justify-center"
         >
           <span>Response</span>
-          <textarea class="textarea" rows="4" placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit." />
+          <textarea class="textarea" rows="4" bind:value={response_body} placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit." />
         </div>
       </div>
 
