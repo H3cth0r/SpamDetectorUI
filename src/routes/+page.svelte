@@ -3,7 +3,7 @@
   import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 
   let file_value: string = "json";
-  let base_url: string = "localhost:8080/";
+  let base_url: string = "https://weasel-choice-scarcely.ngrok-free.app/";
   let model_value: string = "roberta";
   let filename: string = "PNG, JPG, and GIF allowed.";
 
