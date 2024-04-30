@@ -5,9 +5,11 @@
   let file_value: string = "json";
   let base_url: string = "localhost:8080/";
   let model_value: string = "roberta";
+  let filename: string = "PNG, JPG, and GIF allowed.";
 
   let files: FileList;
   function addedFile(e: Event): void{
+    filename = files[0].name;
     console.log(files);
   }
 
@@ -114,6 +116,7 @@
         >
           {#if file_value == "csv"}
               <FileDropzone name="files" bind:files on:change={addedFile} accept="text/csv">
+                <svelte:fragment slot="meta">{filename}</svelte:fragment>
               </FileDropzone>
           {:else}
             <textarea class="textarea" bind:value={request_body} rows="4" placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit." />
